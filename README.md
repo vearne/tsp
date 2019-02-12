@@ -10,7 +10,7 @@
 遗传算法的发现较优解的速度非常快，可以用来解决某些NP问题
 
 
-![image_1d3dl5h72fps47oavmb2v5na9.png-164.4kB](http://static.zybuluo.com/woshiaotian/r2zrn5kvthi8r94zx1c1z9dr/image_1d3dl5h72fps47oavmb2v5na9.png)
+![image_1d3dl5h72fps47oavmb2v5na9.png-164.4kB](./image_1d3dl5h72fps47oavmb2v5na9.png)
 ### 1. 初始化种群
 
 ### 2. 评估种群中个体的适应度？
