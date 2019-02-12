@@ -1,6 +1,7 @@
 package tsp
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -120,11 +121,10 @@ func NewTSP(positions []string, distance DistanceFunc, options ...JobOption) *TS
 	option.variationProbability = 0.01
 	option.selectAlg = RouletteWheelSelection
 
+	res.option = option
 	for _, option := range options {
 		option.f(res.option)
 	}
-
-	res.option = option
 
 	//所有基因的取值都在这个范围内 [0, maxValue]
 	res.maxValue = res.MaxValue() - 1
@@ -147,6 +147,8 @@ func (t *TSP) Evolution() (gene string) {
 	// 进入迭代过程
 	// TODO 是否多次迭代最优解都没有发生变化，就可以退出迭代
 	for counter := 0; counter <= t.option.maxIterationCount; counter++ {
+		// 打印每一代的情况
+		t.PrintGen(counter, population)
 		// 2. 评估适应度
 		fitnessSlice := t.Fitness(population)
 		// 3. 选择
@@ -167,6 +169,16 @@ func (t *TSP) Evolution() (gene string) {
 		}
 	}
 	return population[bestIdx]
+}
+
+func (t *TSP) PrintGen(counter int, genes []string) {
+	fmt.Println("--------------")
+	fmt.Println("counter:", counter, "size:", len(genes))
+	fmt.Println("gene:", genes)
+	for _, gene := range genes {
+		fmt.Print(Gene2Sequence(t.option.positions, gene))
+	}
+	fmt.Println()
 }
 
 func (t *TSP) Slove() []string {

@@ -1,1 +1,1 @@
-module tsp
+module github.com/vearne/tsp
