@@ -99,7 +99,7 @@ type DistanceFunc func(a, b string) float64
 type TSP struct {
 	option *jobOption
 	// 基因(二进制串)对应数值的最大取值(闭区间)
-	maxValue int
+	maxValue int64
 	// 基因的bit数
 	geneLength int
 	// 剔除初始点剩下的位置
@@ -128,7 +128,7 @@ func NewTSP(positions []string, distance DistanceFunc, options ...JobOption) *TS
 
 	//所有基因的取值都在这个范围内 [0, maxValue]
 	res.maxValue = res.MaxValue() - 1
-	res.geneLength = int(math.Ceil(math.Log2(float64(Factorial(len(positions) - 1)))))
+	res.geneLength = int(math.Ceil(math.Log2(float64(res.maxValue + 1))))
 	res.combinPostions = res.option.positions[1:]
 	res.startPoint = res.option.positions[0]
 	return res
@@ -136,8 +136,8 @@ func NewTSP(positions []string, distance DistanceFunc, options ...JobOption) *TS
 
 // 除去起止点，其它位置能够构成的情况数量
 // 0， MaxValue -1
-func (t *TSP) MaxValue() int {
-	return Factorial(len(t.option.positions)-1) - 1
+func (t *TSP) MaxValue() int64 {
+	return Factorial(int64(len(t.option.positions)-1)) - 1
 }
 
 // 返回迭代指定次数后得到的最优解
@@ -174,9 +174,10 @@ func (t *TSP) Evolution() (gene string) {
 func (t *TSP) PrintGen(counter int, genes []string) {
 	fmt.Println("--------------")
 	fmt.Println("counter:", counter, "size:", len(genes))
-	fmt.Println("gene:", genes)
-	for _, gene := range genes {
-		fmt.Print(Gene2Sequence(t.option.positions, gene))
+	fmt.Println("10 of gene:", genes[0:3])
+
+	for i := 0; i < 10 && i < len(genes); i++ {
+		fmt.Print(Gene2Sequence(t.option.positions, genes[i]))
 	}
 	fmt.Println()
 }
@@ -196,7 +197,7 @@ func (t *TSP) Slove() []string {
 func (t *TSP) InitPopulation() []string {
 	set := NewStringSet()
 	for i := 0; i < t.option.initPopulationSize; i++ {
-		x := rand.Intn(t.maxValue + 1)
+		x := rand.Int63n(t.maxValue + 1)
 		set.Add(Encode(x, t.geneLength))
 	}
 
@@ -234,6 +235,7 @@ func (t *TSP) CrossAndVariation(population []string) []string {
 	set.AddAll(population)
 
 	N = len(population)
+	//fmt.Println("N:", N)
 	for i := 0; i < N/2+1; i++ {
 		// 选择父亲和母亲
 		father := rand.Intn(N)

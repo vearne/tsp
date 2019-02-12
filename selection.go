@@ -1,6 +1,8 @@
 package tsp
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 const (
 	RouletteWheelSelection = "Roulette_Wheel"
@@ -34,7 +36,7 @@ func RouletteWheel(genes []string, fitnessSlice []float64, maxSize int) []string
 	var temp float64 = 0
 	// 0-->5-->10----->20--------->35
 	// 适应度大的生存的机率更大
-	var upBounds []float64 = make([]float64, len(genes))
+	var upBounds []float64 = make([]float64, 0, len(genes))
 
 	// 归一化
 	for _, fitness := range fitnessSlice {
@@ -45,6 +47,9 @@ func RouletteWheel(genes []string, fitnessSlice []float64, maxSize int) []string
 		upBounds = append(upBounds, temp/sum)
 	}
 
+	//fmt.Println("genes:", len(genes), "fitnessSlice:",
+	//len(fitnessSlice), "upBounds:", len(upBounds), "maxSize:", maxSize)
+	//fmt.Println("fitnessSlice:", fitnessSlice)
 	set := NewStringSet()
 	for i := 0; i <= maxSize; i++ {
 		for idx, upBound := range upBounds {

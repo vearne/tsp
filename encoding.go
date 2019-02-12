@@ -8,13 +8,13 @@ import (
 )
 
 // length 生成的2进制串的长度， 不足的部分在高位补0
-func Encode(value int, length int) string {
+func Encode(value int64, length int) string {
 	return fmt.Sprintf("%0"+strconv.Itoa(length)+"b", value)
 }
 
-func Decode(s string) int {
+func Decode(s string) int64 {
 	value, _ := strconv.ParseInt(s, 2, 64)
-	return int(value)
+	return value
 }
 
 func Sequence2Gene(initSilce []string, seq []string) string {
@@ -41,14 +41,14 @@ func Sequence2Gene(initSilce []string, seq []string) string {
 
 	// 3. 转换成数值
 	//fmt.Printf("value:%v\n", indexSlice)
-	value := 0
+	var value int64 = 0
 	for idx, num := range indexSlice {
-		value += num * Factorial(len(indexSlice)-idx-1)
+		value += int64(num) * Factorial(int64(len(indexSlice)-idx-1))
 	}
 
 	//fmt.Printf("value:%v\n", value)
 	// 4. 换成2进制(形如: "010")
-	N := len(initSilce)
+	var N int64 = int64(len(initSilce))
 	length := int(math.Ceil(math.Log2(float64(Factorial(N)))))
 	// 计算基因序列的最大长度
 	return Encode(value, length)
@@ -68,8 +68,7 @@ func Gene2Sequence(initSilce []string, gene string) (seq []string) {
 	for i := 0; i < len(initSilce); i++ {
 		tempSlice := set.ToArray()
 		sort.StringSlice(tempSlice).Sort()
-		f := Factorial(N - i - 1)
-
+		f := Factorial(int64(N - i - 1))
 		num := value / f
 		//fmt.Printf("value:%v, f:%v, num:%v\n", value, f, num)
 		value = value % f

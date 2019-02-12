@@ -14,7 +14,7 @@ func TestEncode(t *testing.T) {
 }
 
 func TestDecode(t *testing.T) {
-	target := 5
+	var target int64 = 5
 	value := Decode("00101")
 
 	if target == value {
