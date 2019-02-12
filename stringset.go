@@ -12,6 +12,10 @@ func (set *StringSet) Add(str string) {
 	set.InternalMap[str] = 1
 }
 
+func (set *StringSet) Size() int {
+	return len(set.InternalMap)
+}
+
 func (set *StringSet) AddAll(itemSlice []string) {
 	for _, item := range itemSlice {
 		set.InternalMap[item] = 1

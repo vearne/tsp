@@ -74,7 +74,7 @@ func MaxIterationCountOption(iterationCount int) JobOption {
 }
 
 // 设置选择函数
-func SelectFuncOption(f string) JobOption {
+func SelectAlgOption(f string) JobOption {
 	return JobOption{func(do *jobOption) {
 		do.selectAlg = f
 	}}
@@ -118,7 +118,7 @@ func NewTSP(positions []string, distance DistanceFunc, options ...JobOption) *TS
 	option.maxPopulationSize = 1000
 	option.maxIterationCount = 200
 	option.crossProbability = 0.7
-	option.variationProbability = 0.01
+	option.variationProbability = 0.03
 	option.selectAlg = RouletteWheelSelection
 
 	res.option = option
@@ -174,9 +174,13 @@ func (t *TSP) Evolution() (gene string) {
 func (t *TSP) PrintGen(counter int, genes []string) {
 	fmt.Println("--------------")
 	fmt.Println("counter:", counter, "size:", len(genes))
-	fmt.Println("10 of gene:", genes[0:3])
+	if len(genes) > 3 {
+		fmt.Println("10 of gene:", genes[0:3])
+	} else {
+		fmt.Println("10 of gene:", genes)
+	}
 
-	for i := 0; i < 10 && i < len(genes); i++ {
+	for i := 0; i < 3 && i < len(genes); i++ {
 		fmt.Print(Gene2Sequence(t.option.positions, genes[i]))
 	}
 	fmt.Println()
@@ -225,6 +229,17 @@ func (t *TSP) Fitness(itemSlice []string) []float64 {
 	return res
 }
 
+func (t *TSP) RouteDistance(seq []string) float64 {
+	var val float64 = 0
+	// 计算旅行需要走过的路程
+	for i := 0; i < len(seq); i++ {
+		if i > 0 {
+			val += t.option.distance(seq[i], seq[i-1])
+		}
+	}
+	return val
+}
+
 /*
    1. 交叉 每次从种群中，随机挑出2个，根据交叉概率，决定是否交叉
    2. 变异 交叉产生的新个体，根据变异概率，决定是否变异
@@ -265,6 +280,7 @@ func (t *TSP) CrossAndVariation(population []string) []string {
 func (t *TSP) CrossAction(gene1, gene2 string) []string {
 	res := make([]string, 0, 2)
 	point := rand.Intn(t.geneLength - 1)
+	//fmt.Println("point:", point)
 	child1 := gene1[0:point] + gene2[point:]
 	child2 := gene2[0:point] + gene1[point:]
 	if t.isValid(child1) {
@@ -283,6 +299,7 @@ func (t *TSP) CrossAction(gene1, gene2 string) []string {
 func (t *TSP) VariationAction(gene string) []string {
 	res := make([]string, 0, 1)
 	point := rand.Intn(t.geneLength)
+	//fmt.Println("point:", point)
 	newBit := '0'
 	if gene[point] == '0' {
 		newBit = '1'

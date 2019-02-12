@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	//"github.com/vearne/tsp"
 	"io"
 	"math"
 	"os"
@@ -69,15 +68,35 @@ func main() {
 		"银川", "呼和浩特", "南宁", "哈尔滨", "长春", "沈阳", "石家庄",
 		"太原", "西宁"}
 	maxIterCount := tsp.MaxIterationCountOption(200)
-	maxPopulationSize := tsp.MaxPopulationSizeOption(500)
-	t := tsp.NewTSP(positions, distance2, maxIterCount, maxPopulationSize)
+	maxPopulationSize := tsp.MaxPopulationSizeOption(1000)
+	selectFunc := tsp.SelectAlgOption(tsp.RandomTraverseSampleSelection)
+	//selectFunc := tsp.SelectAlgOption(tsp.RouletteWheelSelection)
+	//selectFunc := tsp.SelectAlgOption(tsp.TournamentSelection)
+
+	t := tsp.NewTSP(positions, distance2, maxIterCount, maxPopulationSize, selectFunc)
 	result := t.Slove()
-	fmt.Println("---result---:", result)
+	fmt.Println("---result---:", result, "route distance", t.RouteDistance(result))
 	// 输入到文件，以便绘图观察
 	write2File(result, "/tmp/1.csv")
 
 }
 
-func write2File(seq []string, filepath string) {
+func write2File(seq []string, filePath string) error {
+	f, err := os.Create(filePath)
+	if err != nil {
+		fmt.Printf("create file error: %v\n", err)
+		return err
+	}
+	defer f.Close()
 
+	w := bufio.NewWriter(f)
+
+	fmt.Fprintln(w, "posX,posY")
+
+	for i := 0; i < len(seq); i++ {
+		point := posMap2[seq[i]]
+		lineStr := fmt.Sprintf("%v,%v", point.X, point.Y)
+		fmt.Fprintln(w, lineStr)
+	}
+	return w.Flush()
 }
