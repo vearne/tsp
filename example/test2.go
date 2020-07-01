@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"tsp"
 )
 
@@ -73,11 +74,13 @@ func main() {
 	//selectFunc := tsp.SelectAlgOption(tsp.RouletteWheelSelection)
 	//selectFunc := tsp.SelectAlgOption(tsp.TournamentSelection)
 
+	start := time.Now()
 	t := tsp.NewTSP(positions, distance2, maxIterCount, maxPopulationSize, selectFunc)
 	result := t.Slove()
 	fmt.Println("---result---:", result, "route distance", t.RouteDistance(result))
 	// 输入到文件，以便绘图观察
 	write2File(result, "/tmp/1.csv")
+	fmt.Println("cost", time.Since(start))
 
 }
 

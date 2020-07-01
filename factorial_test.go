@@ -3,8 +3,8 @@ package tsp
 import "testing"
 
 func TestFactorial1(t *testing.T) {
-	value := Factorial(15)
-	var target int64 = 1307674368000
+	value := Factorial(20)
+	var target int64 = 2432902008176640000
 
 	if target == value {
 		t.Logf("success, expect:%v, result:%v, %v", target, value, Memorandum)
